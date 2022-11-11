@@ -11,7 +11,7 @@
 		from time import sleep
 		from gpiozero import DistanceSensor, PWMLED
 		from signal import signal, SIGTERM, SIGHUP, pause
-		
+		SET_DISTANCE = 20
 
 		led    = PWMLED(13)
 		sensor = DistanceSensor(echo=17, trigger=4)
@@ -30,11 +30,14 @@
 		        while running:
 		            distance= sensor.value
 		            print(f'Distance {distance:1.2f} m')
-		            duty_cycle = round(1.0 - distance,1)            
-		            if duty_cycle < 0:
-		                duty_cycle = 0.0
-		            led.value = duty_cycle
-		            sleep(0.1)
+			if SET_DISTANCE >= distance:
+				duty_cycle = round(1.0 - distance,1)            
+# 				if duty_cycle < 0:
+# 				duty_cycle = 0.0
+				led.value = duty_cycle
+				sleep(0.1)
+			else:
+				led.value = 0
 		    except KeyboardInterrupt:
 		        pass
 		    finally:
