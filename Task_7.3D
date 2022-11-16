@@ -50,7 +50,7 @@ try:
             led.ChangeDutyCycle(0)
             
 except KeyboardInterrupt:
-    print("Force Stopped")
+    print("Stopped")
 
 led.stop()
 GPIO.cleanup()
