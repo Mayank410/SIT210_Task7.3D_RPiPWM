@@ -43,8 +43,8 @@ try:
     while 1:
         dis = calDistance()
         print(dis)
-        if dis <= MAX_SET_DISTANCE:
-            led.ChangeDutyCycle(100 - (dis/MAX_SET_DISTANCE * 100))
+        if dis <= MAXIMUM_SET_DISTANCE:
+            led.ChangeDutyCycle(100 - (dis/MAXIMUM_SET_DISTANCE * 100))
             time.sleep(0.1)
         else:
             led.ChangeDutyCycle(0)
