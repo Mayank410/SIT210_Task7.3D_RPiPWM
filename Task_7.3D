@@ -41,7 +41,7 @@ def calculateDistance():
 
 try:
     while 1:
-        dis = calDistance()
+        dis = calculateDistance()
         print(dis)
         if dis <= MAXIMUM_SET_DISTANCE:
             led.ChangeDutyCycle(100 - (dis/MAXIMUM_SET_DISTANCE * 100))
