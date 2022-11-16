@@ -5,46 +5,52 @@
 		
 		    Student ID:     2110994771
 		    Student Name:   Mayank Sharma
-		'''
-		
+import RPi.GPIO as GPIO
+import time
 
-		from time import sleep
-		from gpiozero import DistanceSensor, PWMLED
-		from signal import signal, SIGTERM, SIGHUP, pause
-		SET_DISTANCE = 20
+GPIO.setmode(GPIO.BOARD)
 
-		led    = PWMLED(13)
-		sensor = DistanceSensor(echo=17, trigger=4)
-		
+LED = 12
+TRIG = 10
+ECHO = 8
 
-		def safe_exit():
-		    exit(1)
-		
+MAX_SET_DISTANCE = 20
 
-		def main():
-		    running = True
-		    try:
-		        signal(SIGTERM, safe_exit)
-		        signal(SIGHUP, safe_exit)
-		        led.on()
-		        while running:
-		            distance= sensor.value
-		            print(f'Distance {distance:1.2f} m')
-			if SET_DISTANCE >= distance:
-				duty_cycle = round(1.0 - distance/SET_DISTANCE,1)            
-# 				if duty_cycle < 0:
-# 				duty_cycle = 0.0
-				led.value = duty_cycle
-				sleep(0.1)
-			else:
-				led.value = 0
-		    except KeyboardInterrupt:
-		        pass
-		    finally:
-		        running = False
-		        sensor.close()
-		
+GPIO.setup(LED, GPIO.OUT)
+GPIO.setup(TRIG, GPIO.OUT)
+GPIO.setup(ECHO, GPIO.IN)
 
-		if __name__ == '__main__':
-		    main()
+led = GPIO.PWM(LED, 100)
+led.start(0)
 
+def calDistance():
+    GPIO.output(TRIG, True)
+    time.sleep(0.00001)
+    GPIO.output(TRIG, False)
+
+    while GPIO.input(ECHO) == False:
+        start = time.time()
+
+    while GPIO.input(ECHO) == True:
+        end = time.time()
+
+    sig_time = end-start
+    
+    distance = sig_time / 0.000058
+    return distance
+
+try:
+    while 1:
+        dis = calDistance()
+        print(dis)
+        if dis <= MAX_SET_DISTANCE:
+            led.ChangeDutyCycle(100 - (dis/MAX_SET_DISTANCE * 100))
+            time.sleep(0.1)
+        else:
+            led.ChangeDutyCycle(0)
+            
+except KeyboardInterrupt:
+    print("Force Stopped")
+
+led.stop()
+GPIO.cleanup()
